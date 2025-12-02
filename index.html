@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queens Puzzle</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Queens</h1>
+            <div class="timer" id="timer">00:00</div>
+        </header>
+
+        <div class="controls">
+            <button id="newGameBtn" class="btn btn-primary">New Game</button>
+            <button id="clearBoardBtn" class="btn btn-secondary game-only hidden">Clear Board</button>
+            <button id="hintBtn" class="btn btn-hint game-only hidden">Hint</button>
+            <button id="showSolutionBtn" class="btn btn-solution game-only hidden" disabled>Show Solution</button>
+            <button id="howToPlayBtn" class="btn btn-info">How to Play</button>
+        </div>
+
+        <div id="howToPlay" class="how-to-play hidden">
+            <h3>How to Play</h3>
+            <ul>
+                <li>Your goal is to place exactly one queen in each row, column, and color region.</li>
+                <li>Tap once to place an X (no queen here), tap twice to place a queen, tap again to clear.</li>
+                <li>Queens cannot touch each other, not even diagonally.</li>
+                <li>Every puzzle you see is guaranteed to be solvable.</li>
+            </ul>
+        </div>
+
+        <div id="welcomeScreen" class="welcome-screen">
+            <div class="welcome-content">
+                <h2>Welcome to Queens Puzzle!</h2>
+                <p>A new puzzle is generated every 5 minutes.</p>
+                <p>Everyone playing at the same time gets the same board.</p>
+                
+                <div class="demo-section">
+                    <h3>How to Play:</h3>
+                    <div class="demo-grids">
+                        <div class="demo-item">
+                            <p class="demo-label">Click once → X</p>
+                            <div class="demo-transition">
+                                <div class="mini-grid">
+                                    <div class="mini-cell empty region-0"></div>
+                                </div>
+                                <span class="arrow">→</span>
+                                <div class="mini-grid">
+                                    <div class="mini-cell region-0">
+                                        <span class="x-mark">✕</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="demo-item">
+                            <p class="demo-label">Click twice → Queen</p>
+                            <div class="demo-transition">
+                                <div class="mini-grid">
+                                    <div class="mini-cell region-1">
+                                        <span class="x-mark">✕</span>
+                                    </div>
+                                </div>
+                                <span class="arrow">→</span>
+                                <div class="mini-grid">
+                                    <div class="mini-cell region-1">
+                                        <span class="queen">♛</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="demo-item">
+                            <p class="demo-label">Click again → Clear</p>
+                            <div class="demo-transition">
+                                <div class="mini-grid">
+                                    <div class="mini-cell region-2">
+                                        <span class="queen">♛</span>
+                                    </div>
+                                </div>
+                                <span class="arrow">→</span>
+                                <div class="mini-grid">
+                                    <div class="mini-cell empty region-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="start-prompt">Click "New Game" to start playing!</p>
+            </div>
+        </div>
+
+        <div id="board" class="board hidden"></div>
+
+        <div id="winModal" class="modal hidden">
+            <div class="modal-content">
+                <h2>🎉 You solved it! 🎉</h2>
+                <p>Time: <span id="winTime"></span></p>
+                <div class="modal-buttons">
+                    <button id="newGameFromWin" class="btn btn-primary">New Random Board</button>
+                    <button id="playAgain" class="btn btn-secondary">Play Again (Same Board)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
