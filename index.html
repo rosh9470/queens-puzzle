@@ -14,8 +14,8 @@
         </header>
 
         <div class="controls">
-            <button id="newGameBtn" class="btn btn-primary">New Game</button>
-            <button id="clearBoardBtn" class="btn btn-secondary game-only hidden">Clear Board</button>
+            <button id="newGameBtn" class="btn btn-primary">Start Game</button>
+            <button id="clearBoardBtn" class="btn btn-secondary game-only hidden">Restart Board</button>
             <button id="hintBtn" class="btn btn-hint game-only hidden">Hint</button>
             <button id="showSolutionBtn" class="btn btn-solution game-only hidden" disabled>Show Solution</button>
             <button id="howToPlayBtn" class="btn btn-info">How to Play</button>
@@ -34,8 +34,9 @@
         <div id="welcomeScreen" class="welcome-screen">
             <div class="welcome-content">
                 <h2>Welcome to Queens Puzzle!</h2>
-                <p>A new puzzle is generated every 5 minutes.</p>
-                <p>Everyone playing at the same time gets the same board.</p>
+                <p>🕐 A new puzzle is generated every 5 minutes (synced globally)</p>
+                <p>🎮 Everyone playing in the same 5-minute window gets the same board</p>
+                <p>🏆 Perfect for racing against friends!</p>
                 
                 <div class="demo-section">
                     <h3>How to Play:</h3>
@@ -89,7 +90,7 @@
                     </div>
                 </div>
                 
-                <p class="start-prompt">Click "New Game" to start playing!</p>
+                <p class="start-prompt">Click "Start Game" to begin!</p>
             </div>
         </div>
 
@@ -100,8 +101,8 @@
                 <h2>🎉 You solved it! 🎉</h2>
                 <p>Time: <span id="winTime"></span></p>
                 <div class="modal-buttons">
-                    <button id="newGameFromWin" class="btn btn-primary">New Random Board</button>
-                    <button id="playAgain" class="btn btn-secondary">Play Again (Same Board)</button>
+                    <button id="playAgain" class="btn btn-primary">Try Again</button>
+                    <button id="newGameFromWin" class="btn btn-secondary">Back to Home</button>
                 </div>
             </div>
         </div>

@@ -51,7 +51,8 @@ let hintCooldown = false;
  */
 function generateRandomRegions(size) {
     const grid = Array.from({ length: size }, () => Array(size).fill(-1));
-    const targetRegionCount = Math.floor(seededRandom() * 3) + (size - 1); // 6-8 regions for size 7
+    // Fewer regions = larger regions = harder puzzle (5-6 regions for size 7)
+    const targetRegionCount = Math.floor(seededRandom() * 2) + (size - 2);
     let currentRegionId = 0;
     
     // Helper: get unassigned neighbors
@@ -68,22 +69,33 @@ function generateRandomRegions(size) {
         return neighbors;
     }
     
-    // Helper: grow a region from a starting cell
+    // Helper: grow a region from a starting cell with irregular spread
     function growRegion(startR, startC, regionId, targetSize) {
         const cells = [[startR, startC]];
         grid[startR][startC] = regionId;
         
         while (cells.length < targetSize) {
-            // Pick a random cell from the current region to expand from
-            const randomIndex = Math.floor(seededRandom() * cells.length);
-            const [r, c] = cells[randomIndex];
+            // Prefer growing from edge cells to create more spread-out shapes
+            // 70% chance to pick from last 40% of cells (newer/edge cells)
+            let pickIndex;
+            if (seededRandom() < 0.7 && cells.length > 3) {
+                const edgeStartIndex = Math.floor(cells.length * 0.6);
+                pickIndex = edgeStartIndex + Math.floor(seededRandom() * (cells.length - edgeStartIndex));
+            } else {
+                pickIndex = Math.floor(seededRandom() * cells.length);
+            }
+            
+            const [r, c] = cells[pickIndex];
             const neighbors = getUnassignedNeighbors(r, c);
             
             if (neighbors.length === 0) {
-                // Try another cell in the region
+                // Try another cell in the region, prefer edge cells
                 const allNeighbors = [];
-                for (const [cr, cc] of cells) {
-                    allNeighbors.push(...getUnassignedNeighbors(cr, cc));
+                for (let i = cells.length - 1; i >= 0; i--) {
+                    const [cr, cc] = cells[i];
+                    const cellNeighbors = getUnassignedNeighbors(cr, cc);
+                    allNeighbors.push(...cellNeighbors);
+                    if (allNeighbors.length > 0 && seededRandom() < 0.6) break; // Early exit for irregularity
                 }
                 if (allNeighbors.length === 0) break; // Can't grow anymore
                 
@@ -100,20 +112,20 @@ function generateRandomRegions(size) {
         return cells.length;
     }
     
-    // Create regions
+    // Create regions with more size variation
     const regionSizes = [];
     let remainingCells = size * size;
     
     for (let i = 0; i < targetRegionCount - 1; i++) {
-        const minSize = 2;
-        const maxSize = Math.min(8, Math.floor(remainingCells / (targetRegionCount - i)));
+        const minSize = 3; // Larger minimum size
+        const maxSize = Math.min(12, Math.floor(remainingCells / (targetRegionCount - i))); // Allow larger regions
         const regionSize = Math.floor(seededRandom() * (maxSize - minSize + 1)) + minSize;
         regionSizes.push(regionSize);
         remainingCells -= regionSize;
     }
     
     // Last region gets all remaining cells
-    if (remainingCells >= 2) {
+    if (remainingCells >= 3) {
         regionSizes.push(remainingCells);
     } else {
         // Adjust if last region would be too small
@@ -695,8 +707,9 @@ function newGame() {
     if (welcomeScreen) welcomeScreen.classList.add('hidden');
     if (board) board.classList.remove('hidden');
     
-    // Show game-only controls
+    // Show game-only controls and hide start button
     document.querySelectorAll('.game-only').forEach(btn => btn.classList.remove('hidden'));
+    document.getElementById('newGameBtn').classList.add('hidden');
     
     // Reset hint button
     const hintBtn = document.getElementById('hintBtn');
@@ -737,18 +750,26 @@ function newGame() {
 }
 
 function clearBoard() {
-    // Keep regions and solution, just clear cell states
+    // Keep regions and solution, just clear cell states and restart timer
     gameWon = false;
     firstMoveDetector = false;
     cellStates = Array.from({ length: gridSize }, () => Array(gridSize).fill('empty'));
     resetTimer();
     renderBoard();
+    
+    // Restart the timer
+    startTimer();
 }
 
 function playAgain() {
-    // Clear board but keep the same puzzle
+    // Clear board and restart with the same puzzle
     document.getElementById('winModal').classList.add('hidden');
-    clearBoard();
+    gameWon = false;
+    firstMoveDetector = false;
+    cellStates = Array.from({ length: gridSize }, () => Array(gridSize).fill('empty'));
+    resetTimer();
+    renderBoard();
+    startTimer();
 }
 
 // ============================================================
@@ -767,7 +788,15 @@ document.addEventListener('DOMContentLoaded', () => {
         howToPlay.classList.toggle('hidden');
     });
     
-    document.getElementById('newGameFromWin').addEventListener('click', newGame);
+    document.getElementById('newGameFromWin').addEventListener('click', () => {
+        // Go back to welcome screen
+        document.getElementById('winModal').classList.add('hidden');
+        document.getElementById('board').classList.add('hidden');
+        document.getElementById('welcomeScreen').classList.remove('hidden');
+        document.querySelectorAll('.game-only').forEach(btn => btn.classList.add('hidden'));
+        document.getElementById('newGameBtn').classList.remove('hidden');
+        resetTimer();
+    });
     document.getElementById('playAgain').addEventListener('click', playAgain);
     
     // Don't auto-start - wait for user to click New Game
